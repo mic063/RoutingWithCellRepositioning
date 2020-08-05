@@ -41,17 +41,28 @@ set(LIB_NAME "FastRoute4.1")
 
 set(CMAKE_CXX_STANDARD 11)
 
-file(GLOB_RECURSE SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(SRC_FILES
+  src/DataProc.cpp
+  src/EdgeShift.cpp
+  src/FastRoute.cpp
+  src/RSMT.cpp
+  src/RipUp.cpp
+  src/dist.cpp
+  src/maze.cpp
+  src/maze3D.cpp
+  src/route.cpp
+  src/utility.cpp
+  )
 
 add_definitions(-DLIBRARY_MODE)
 add_LIBRARY(${LIB_NAME} STATIC ${SRC_FILES})
 
 target_include_directories(${LIB_NAME} PUBLIC
                            ${CMAKE_CURRENT_SOURCE_DIR}/include
-                           ${CMAKE_CURRENT_SOURCE_DIR}/../flute3)
+                           flute
+			   			   ${Boost_INCLUDE_DIRS}
+                           ${CMAKE_CURRENT_SOURCE_DIR}/../pdrev)
 
 target_link_libraries(FastRoute4.1
+                    pdrev
                     flute)

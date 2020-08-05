@@ -42,31 +42,34 @@
 
 namespace FastRoute {
 
-typedef struct {
+struct PIN {
         long x;
         long y;
         int layer;
-} PIN;
+};
 
-typedef struct {
+struct ROUTE {
         long initX;
         long initY;
         int initLayer;
         long finalX;
         long finalY;
         int finalLayer;
-} ROUTE;
+};
 
-typedef struct {
+struct NET {
         std::string name;
-        int id;
+        int idx;
         std::vector<ROUTE> route;
-} NET;
-
+};
 
 class FT {
        public:
-        FT() = default;
+        FT();
+        ~FT();
+
+        std::map<int, std::vector<PIN>> allNets;
+        int maxNetDegree;
 
         void setGridsAndLayers(int x, int y, int nLayers);
         void addVCapacity(int verticalCapacity, int layer);
@@ -78,25 +81,28 @@ class FT {
         void setLowerLeft(int x, int y);
         void setTileSize(int width, int height);
         void setLayerOrientation(int x);
-        void addNet(char *name, int netIdx, int nPIns, int minWIdth, PIN pins[]);
+        void addNet(char *name, int netIdx, int nPIns, int minWIdth, PIN pins[], float alpha, bool isClock);
         void initEdges();
         void setNumAdjustments(int nAdjustements);
         void addAdjustment(long x1, long y1, int l1, long x2, long y2, int l2, int reducedCap, bool isReduce = true);
         void initAuxVar();
         int run(std::vector<NET> &);
         std::vector<NET> getResults();
-
-        int getEdgeCapacity(long x1, long y1, int l1, long x2, long y2, int l2);
-        std::map<std::string, std::vector<PIN>> getNets();
-        void setMaxNetDegree(int);
-    
         void writeCongestionReport2D(std::string fileName);
         void writeCongestionReport3D(std::string fileName);
 
-private:
-    std::map<std::string, std::vector<PIN>> allNets;
-    int maxNetDegree;
-
+        int getEdgeCapacity(long x1, long y1, int l1, long x2, long y2, int l2);
+    	int getEdgeCurrentResource(long x1, long y1, int l1, long x2, long y2, int l2);
+        int getEdgeCurrentUsage(long x1, long y1, int l1, long x2, long y2, int l2);
+        std::map<int, std::vector<PIN>> getNets();
+        void setEdgeUsage(long x1, long y1, int l1, long x2, long y2, int l2, int newUsage);
+        void setEdgeCapacity(long x1, long y1, int l1, long x2, long y2, int l2, int newCap);
+        void setMaxNetDegree(int);
+        void setAlpha(float a);
+        void setVerbose(int v);
+        void setOverflowIterations(int iterations);
+        void setPDRevForHighFanout(int pdRevHihgFanout);
+        void setAllowOverflow(bool allow);
 };
 }  // namespace FastRoute
 #endif /* __FASTROUTE_API__ */
