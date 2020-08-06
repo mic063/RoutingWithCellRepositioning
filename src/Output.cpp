@@ -12,13 +12,15 @@ void run_fastroute() {
 
     FastRoute::FT fastroute;
 
-    //fastroute.setVerbose(20);
-    //fastroute.setAllowOverflow(false);
+	fastroute.setVerbose(2);
+	fastroute.setAllowOverflow(true);
+	fastroute.setOverflowIterations(1);
+	
     fastroute.setLowerLeft(g_gridBoundaryIdx.colBeginIdx, g_gridBoundaryIdx.rowBeginIdx);
     fastroute.setTileSize(1, 1);
     fastroute.setGridsAndLayers((g_gridBoundaryIdx.colEndIdx-g_gridBoundaryIdx.colBeginIdx)+1,
                                 (g_gridBoundaryIdx.rowEndIdx-g_gridBoundaryIdx.rowBeginIdx)+1,
-                                g_numLayers);
+                                 g_numLayers);
 
     for(int i=0; i < g_numLayers; i++) {
         Layer layer = g_layers[i];
@@ -79,7 +81,8 @@ void run_fastroute() {
 #endif
         }
 
-        fastroute.addNet(net.netName, net.idx, net.numPins, 1, frPins /*, 1.0*/);
+			fastroute.addNet(net.netName, net.idx, net.numPins, 1, frPins, 1.0, false);
+//        fastroute.addNet(net.netName, net.idx, net.numPins, 1, frPins /*, 1.0*/);
         free(frPins);
     }
 
