@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////
+// MIC063
+// Authors: Rafael Silva
+// Advisor: Ricardo Reis
+// 
+// 2020
+// Federal University of Rio Grande do Sul (UFRGS)
+
+
 #include <cstdio> // sscanf
 #include <stdlib.h>
 #include <stdio.h>

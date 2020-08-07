@@ -12,15 +12,14 @@ void run_fastroute() {
 
     FastRoute::FT fastroute;
 
-	fastroute.setVerbose(2);
-	fastroute.setAllowOverflow(true);
-	fastroute.setOverflowIterations(1);
-	
+    fastroute.setVerbose(2);
+    fastroute.setAllowOverflow(true);
+    fastroute.setOverflowIterations(1);
     fastroute.setLowerLeft(g_gridBoundaryIdx.colBeginIdx, g_gridBoundaryIdx.rowBeginIdx);
     fastroute.setTileSize(1, 1);
     fastroute.setGridsAndLayers((g_gridBoundaryIdx.colEndIdx-g_gridBoundaryIdx.colBeginIdx)+1,
                                 (g_gridBoundaryIdx.rowEndIdx-g_gridBoundaryIdx.rowBeginIdx)+1,
-                                 g_numLayers);
+                                g_numLayers);
 
     for(int i=0; i < g_numLayers; i++) {
         Layer layer = g_layers[i];
@@ -39,13 +38,13 @@ void run_fastroute() {
     // Esse funcao depende da direcao do layer M1. Se M1 for horizontal, chama ela com 1; se for vertical, chama ela com 0
     // PDF do problema diz: "The routing direction will always be horizontal on M1"
     fastroute.setLayerOrientation(1);
-    
+
     //fastroute.usePdRev();
-    
+
     fastroute.setNumberNets(g_numNets);
-    
+
 //#define DEBUG_NETS
-    
+
 #ifdef DEBUG_NETS
     std::cout << "num net " << g_numNets << std::endl;
 #endif
@@ -73,7 +72,7 @@ void run_fastroute() {
 
             assert(layer != -1);
 
-            frPins[j].layer = (int)layer;
+            frPins[j].layer = (int)layer+1;
             frPins[j].x = (long)(inst->gGridRowIdx);
             frPins[j].y = (long)(inst->gGridColIdx);
 #ifdef DEBUG_NETS
@@ -81,8 +80,7 @@ void run_fastroute() {
 #endif
         }
 
-			fastroute.addNet(net.netName, net.idx, net.numPins, 1, frPins, 1.0, false);
-//        fastroute.addNet(net.netName, net.idx, net.numPins, 1, frPins /*, 1.0*/);
+        fastroute.addNet(net.netName, net.idx, net.numPins, 1, frPins , 1.0, false);
         free(frPins);
     }
 
@@ -147,13 +145,13 @@ void run_fastroute() {
     std::vector<FastRoute::NET> nets = std::vector<FastRoute::NET>();
     fastroute.run(nets);
     std::cout << "Running FastRoute... Done!" << std::endl;
-
-	int routesCnt = 0;
-		for (FastRoute::NET net : nets) {
-			routesCnt += net.route.size();
-		}
-    std::cout << "Num of routes for the design: " << routesCnt << "\n";
-
+    
+    int routesCnt = 0;
+    for (FastRoute::NET& net : nets) {
+        routesCnt += net.route.size();
+    }
+    std::cout << "Routed nets: " << nets.size() << std::endl;
+    std::cout << "Num of routes for the design: " << routesCnt << std::endl;
 
     fastroute.writeCongestionReport3D(output_file);
 
