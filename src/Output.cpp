@@ -148,6 +148,13 @@ void run_fastroute() {
     fastroute.run(nets);
     std::cout << "Running FastRoute... Done!" << std::endl;
 
+	int routesCnt = 0;
+		for (FastRoute::NET net : nets) {
+			routesCnt += net.route.size();
+		}
+    std::cout << "Num of routes for the design: " << routesCnt << "\n";
+
+
     fastroute.writeCongestionReport3D(output_file);
 
 }
