@@ -7,10 +7,10 @@
 #include "FastRoute.h"
 
 extern const char* output_file;
-
+static FastRoute::FT fastroute;
 void run_fastroute() {
 
-    FastRoute::FT fastroute;
+    
 
     fastroute.setVerbose(2);
     fastroute.setAllowOverflow(true);
@@ -142,17 +142,49 @@ void run_fastroute() {
 
     fastroute.initAuxVar();
     std::cout << "Running FastRoute..." << std::endl;
-    std::vector<FastRoute::NET> nets = std::vector<FastRoute::NET>();
+    std::vector<FastRoute::NET> nets;
     fastroute.run(nets);
     std::cout << "Running FastRoute... Done!" << std::endl;
     
-    int routesCnt = 0;
-    for (FastRoute::NET& net : nets) {
-        routesCnt += net.route.size();
-    }
-    std::cout << "Routed nets: " << nets.size() << std::endl;
-    std::cout << "Num of routes for the design: " << routesCnt << std::endl;
-
     fastroute.writeCongestionReport3D(output_file);
 
+    std::ofstream file;
+    file.open(output_file, std::ios::app | std::ios::ate);
+
+    if (!file.is_open()) {
+      std::cout << "[ERROR] Report file could not be open!" << std::endl;
+      std::exit(1);
+    }
+    file << std::endl;
+    
+    // NumRoutes <routeSegmentCount>
+    // <sRowIdx> <sColIdx> <sLayIdx> <eRowIdx> <eColIdx> <eLayIdx> <netName>
+    
+    int numRoutes = 0;
+    for(auto net = nets.begin(); net != nets.end(); net++) {
+        numRoutes += net->route.size();
+    }
+
+    file << "NumRoutes " << numRoutes << std::endl;
+    for(auto net = nets.begin(); net != nets.end(); net++) {
+    
+        for(auto route = net->route.begin(); route != net->route.end(); route++) {
+            file << route->initX;
+            file << " ";
+            file << route->initY;
+            file << " ";
+            file << route->initLayer;
+            file << " ";
+            file << route->finalX;
+            file << " ";
+            file << route->finalY;
+            file << " ";
+            file << route->finalLayer;
+            file << " ";
+            file << net->name;
+            file << std::endl;
+        }
+        
+    }
+    file.close();
 }
